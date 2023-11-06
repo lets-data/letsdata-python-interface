@@ -1,6 +1,6 @@
 from enum import Enum
 
-class DocumentType(Enum):
+class DocumentType(str, Enum):
     CompositeDoc = "CompositeDoc"
     Document = "Document"
     ErrorDoc = "ErrorDoc"

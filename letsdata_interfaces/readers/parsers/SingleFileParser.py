@@ -1,5 +1,10 @@
-from letsdata_interfaces.readers.model import RecordParseHint, RecordHintType, ParseDocumentResultStatus, ParseDocumentResult
-from letsdata_interfaces.documents import Document
+from letsdata_interfaces.readers.model.RecordParseHint import RecordParseHint
+from letsdata_interfaces.readers.model.RecordHintType import RecordHintType
+from letsdata_interfaces.readers.model.ParseDocumentResultStatus import ParseDocumentResultStatus
+from letsdata_interfaces.readers.model.ParseDocumentResult import ParseDocumentResult
+from letsdata_interfaces.documents.Document import Document
+from letsdata_interfaces.documents.ErrorDoc import ErrorDoc
+from letsdata_utils.logging_utils import logger
 '''
     The parser interface for Single File Reader usecase. This is used when all the files are of a single type and the records in the file do not follow a state machine.
     This interface is where you tell us how to parse the individual records from the file. Since this is single file reader, there is no state machine maintained.

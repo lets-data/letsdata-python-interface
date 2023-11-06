@@ -1,4 +1,5 @@
-from letsdata_interfaces.documents import Document, SingleDoc, DocumentType
+from letsdata_interfaces.documents.Document import Document
+from letsdata_interfaces.documents.DocumentType import DocumentType
 
 class SingleDoc(Document):
     def __init__(self, documentType : DocumentType, documentId : str, recordType : str, partitionKey : str, documentMetadata : dict , documentKeyValuesMap : dict) -> None:

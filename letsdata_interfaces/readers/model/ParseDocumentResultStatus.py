@@ -1,6 +1,6 @@
 from enum import Enum
 
-class ParseDocumentResultStatus(Enum):
+class ParseDocumentResultStatus(str, Enum):
     SUCCESS = "SUCCESS"
     ERROR = "ERROR"
     SKIP = "SKIP"

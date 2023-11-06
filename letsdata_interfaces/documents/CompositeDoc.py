@@ -1,4 +1,7 @@
-from letsdata_interfaces.documents import Document, SingleDoc, ErrorDoc, DocumentType
+from letsdata_interfaces.documents.Document import Document
+from letsdata_interfaces.documents.SingleDoc import SingleDoc
+from letsdata_interfaces.documents.ErrorDoc import ErrorDoc
+from letsdata_interfaces.documents.DocumentType import DocumentType
 
 '''
 /**
@@ -30,8 +33,8 @@ from letsdata_interfaces.documents import Document, SingleDoc, ErrorDoc, Documen
 class CompositeDoc(Document):
 
     def __init__(self, documentId : str, recordType : str, partitionKey : str, documentMetadata : dict , doc : SingleDoc, errorDocList :  [ErrorDoc] ) -> None:
-        super.__init__(DocumentType.Enum.CompositeDoc, documentId, recordType, partitionKey, documentMetadata, doc.getDocumentKeyValuesMap())
-        self.documentType = DocumentType.Enum.CompositeDoc
+        super.__init__(DocumentType.CompositeDoc, documentId, recordType, partitionKey, documentMetadata, doc.getDocumentKeyValuesMap())
+        self.documentType = DocumentType.CompositeDoc
         self.document = doc
         self.errorDocList = errorDocList
     

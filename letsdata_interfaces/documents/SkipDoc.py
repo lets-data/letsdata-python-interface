@@ -1,8 +1,9 @@
-from letsdata_interfaces.documents import Document, SingleDoc, DocumentType
+from letsdata_interfaces.documents.SingleDoc import SingleDoc
+from letsdata_interfaces.documents.DocumentType import DocumentType
 
 class SkipDoc(SingleDoc):
     def __init__(self, documentId : str, recordType : str, partitionKey : str, documentMetadata : dict , documentKeyValuesMap : dict, errorStartoffsetMap : dict, errorEndoffsetMap: dict, skipMessage : str) -> None:
-        super.__init__(DocumentType.Enum.SkipDoc, documentId, recordType, partitionKey, documentMetadata, documentKeyValuesMap)
+        super.__init__(DocumentType.SkipDoc, documentId, recordType, partitionKey, documentMetadata, documentKeyValuesMap)
         self.errorStartoffsetMap = errorStartoffsetMap
         self.errorEndoffsetMap = errorEndoffsetMap
         self.skipMessage = skipMessage

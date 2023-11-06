@@ -1,6 +1,6 @@
 from enum import Enum
 
-class RecordHintType(Enum):
+class RecordHintType(str,Enum):
     OFFSET = "OFFSET"
     PATTERN = "PATTERN"
 

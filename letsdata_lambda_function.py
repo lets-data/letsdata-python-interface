@@ -1,7 +1,7 @@
 import gzip, base64, json
 from letsdata_utils.logging_utils import logger
 from letsdata_utils.stage import Stage
-from letsdata_utils.request_utils import return500ResponseFromException, getLambdaStageFromEnvironment, isLambdaFunctionDatasetMicroservice
+from letsdata_utils.request_utils import return500ResponseFromException, getLambdaStageFromEnvironment, isLambdaFunctionDatasetMicroservice, getJsonObject
 from letsdata_service.RequestParser import getServiceRequest
 from letsdata_service.Service import ServiceRequest
 
@@ -45,6 +45,16 @@ def lambda_handler(event, context):
         responseObj = request.execute()
         print("letsdata_lambda_function end - requestId: "+requestId+", response: "+str(responseObj))
         logger.debug("letsdata_lambda_function end - requestId: "+requestId+", response: "+str(responseObj))
-        return responseObj
+        return {
+            "StatusCode": 200,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": {
+                "statusCode": "SUCCESS",
+                "data": getJsonObject(responseObj)
+            }
+        }
+        
     except Exception as err:
         return return500ResponseFromException(err, None)
