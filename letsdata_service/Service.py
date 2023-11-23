@@ -42,7 +42,10 @@ class LetsDataAuthParams:
 
 class InterfaceNames(Enum):
     SingleFileParser = "singlefileparser"
-
+    QueueMessageReader = "queuemessagereader"
+    SagemakerVectorsInterface = "sagemakervectorsinterface"
+    KinesisRecordReader = "kinesisrecordreader"
+    
     @classmethod
     def fromValue(cls, enumValue):
         return cls(enumValue.lower())

@@ -12,7 +12,7 @@ class Document:
         self.partitionKey = partitionKey
         self.documentMetadata = documentMetadata
         self.documentKeyValuesMap = documentKeyValuesMap
-
+    
     def getDocumentType(self) -> str:
       return self.documentType
 

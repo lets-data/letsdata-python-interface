@@ -33,7 +33,7 @@ from letsdata_interfaces.documents.DocumentType import DocumentType
 class CompositeDoc(Document):
 
     def __init__(self, documentId : str, recordType : str, partitionKey : str, documentMetadata : dict , doc : SingleDoc, errorDocList :  [ErrorDoc] ) -> None:
-        super.__init__(DocumentType.CompositeDoc, documentId, recordType, partitionKey, documentMetadata, doc.getDocumentKeyValuesMap())
+        super().__init__(DocumentType.CompositeDoc, documentId, recordType, partitionKey, documentMetadata, doc.getDocumentKeyValuesMap())
         self.documentType = DocumentType.CompositeDoc
         self.document = doc
         self.errorDocList = errorDocList

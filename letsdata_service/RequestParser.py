@@ -2,6 +2,9 @@ from letsdata_utils.logging_utils import logger
 from letsdata_utils.validations import letsdata_assert
 from letsdata_service.Service import ServiceRequest, LetsDataAuthParams, InterfaceNames
 from letsdata_service.SingleFileParserService import getSingleFileParserRequest
+from letsdata_service.QueueMessageReaderService import getQueueMessageReaderServiceRequest
+from letsdata_service.SagemakerVectorsInterfaceService import getSagemakerVectorsInterfaceServiceRequest
+from letsdata_service.KinesisRecordReaderService import getKinesisRecordReaderServiceRequest
 
 def getServiceRequest(event : dict) -> ServiceRequest:
     if event is None:
@@ -21,6 +24,12 @@ def getServiceRequest(event : dict) -> ServiceRequest:
     batchedData : [] = event['batchedData'] if 'batchedData' in event.keys() else None
     if (interfaceName == InterfaceNames.SingleFileParser):
         serviceRequest = getSingleFileParserRequest(requestId, letsDataAuthParams, interfaceName, functionName, data, batchedData)
+    elif (interfaceName == InterfaceNames.QueueMessageReader):
+        serviceRequest = getQueueMessageReaderServiceRequest(requestId, letsDataAuthParams, interfaceName, functionName, data, batchedData)
+    elif (interfaceName == InterfaceNames.SagemakerVectorsInterface):
+        serviceRequest = getSagemakerVectorsInterfaceServiceRequest(requestId, letsDataAuthParams, interfaceName, functionName, data, batchedData)
+    elif (interfaceName == InterfaceNames.KinesisRecordReader):
+        serviceRequest = getKinesisRecordReaderServiceRequest(requestId, letsDataAuthParams, interfaceName, functionName, data, batchedData)
     else:
         raise(Exception("lambda event - interfaceName not yet supported "+str(interfaceName)))
     

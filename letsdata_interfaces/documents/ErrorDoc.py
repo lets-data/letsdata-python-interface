@@ -3,7 +3,7 @@ from letsdata_interfaces.documents.DocumentType import DocumentType
 
 class ErrorDoc(SingleDoc):
     def __init__(self, documentId : str, recordType : str, partitionKey : str, documentMetadata : dict , documentKeyValuesMap : dict, errorStartoffsetMap : dict, errorEndoffsetMap: dict, errorMessage : str) -> None:
-        super.__init__(DocumentType.ErrorDoc, documentId, recordType, partitionKey, documentMetadata, documentKeyValuesMap)
+        super().__init__(DocumentType.ErrorDoc, documentId, recordType, partitionKey, documentMetadata, documentKeyValuesMap)
         self.errorStartoffsetMap = errorStartoffsetMap
         self.errorEndoffsetMap = errorEndoffsetMap
         self.errorMessage = errorMessage
