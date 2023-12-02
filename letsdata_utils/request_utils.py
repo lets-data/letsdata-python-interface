@@ -30,7 +30,7 @@ def isLambdaFunctionDatasetMicroservice(context, stage) -> bool:
 
 def getJsonObject(input : object):
     # if object is primitive type - return 
-    if isinstance(input, str) or isinstance(input, int) or isinstance(input, float) or isinstance(input, bool) or isinstance(input, None):
+    if isinstance(input, str) or isinstance(input, int) or isinstance(input, float) or isinstance(input, bool) or input is None:
         return input
     try: 
         # if object is json serializable - return 
@@ -39,9 +39,13 @@ def getJsonObject(input : object):
     except:
         
         # object is not json serializable. Iterate through the dictionary key value pairs and call getJsonObject for each value recursively
-        customDict = dict()
-        for keyName in input.__dict__.keys():
-            customDict[keyName] = getJsonObject(input.__dict__[keyName])
-        return customDict
+        try: 
+            customDict = dict()
+            for keyName in input.__dict__.keys():
+                customDict[keyName] = getJsonObject(input.__dict__[keyName])
+            return customDict
+        except:
+            logger.error("input has no  __dict__ - type: "+str(type(input)))
+            raise
     
         # TODO handle lists

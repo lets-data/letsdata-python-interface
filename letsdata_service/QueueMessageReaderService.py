@@ -27,26 +27,29 @@ def getQueueMessageReaderServiceRequest(requestId : str, letsDataAuth: LetsDataA
             raise(Exception("lambda event - invalid functionName "+functionName+" for interface QueueMessageReader"))
     
     if functionName == "parseMessage":
-        letsdata_assert(batchedData is None or len(batchedData) == 0, "invalid data - QueueMessageReader.parseMessage requires empty batchedData dictionary")
-        letsdata_assert(isinstance(data, dict) and len(data) == 5, "invalid data - QueueMessageReader.parseMessage requires data keys [messageId, messageGroupId, messageDeduplicationId, messageAttributes, messageBody]")
+        letsdata_assert(batchedData is None or len(batchedData) == 0, "invalid batchedData - QueueMessageReader.parseMessage requires empty batchedData dictionary")
+        letsdata_assert(isinstance(data, dict) and len(data) >= 3 and len(data) <= 5, "invalid data - QueueMessageReader.parseMessage requires data keys [messageId, messageGroupId, messageDeduplicationId, messageAttributes, messageBody]")
         
-        letsdata_assert(not data['messageId'] is None, "invalid messageId - None - QueueMessageReader.parseMessage requires data keys [messageId, messageGroupId, messageDeduplicationId, messageAttributes, messageBody]")
+        letsdata_assert(not data['messageId'] is None, "invalid messageId - None - QueueMessageReader.parseMessage requires data keys [messageId, messageAttributes, messageBody] and optionally [messageGroupId, messageDeduplicationId]")
         letsdata_assert(isinstance(data['messageId'], str), "invalid messageId - QueueMessageReader.parseMessage requires messageId value to be string")
 
-        if not data['messageGroupId'] is None:
+        messageGroupId = None
+        if 'messageGroupId' in data.keys():
             letsdata_assert(isinstance(data['messageGroupId'], str), "invalid messageGroupId - QueueMessageReader.parseMessage requires messageGroupId value to be string")
+            messageGroupId = data['messageGroupId']
 
-        if not data['messageDeduplicationId'] is None:
+        messageDeduplicationId = None
+        if 'messageDeduplicationId' in data.keys():
             letsdata_assert(isinstance(data['messageDeduplicationId'], str), "invalid messageDeduplicationId - QueueMessageReader.parseMessage requires messageDeduplicationId value to be string")
+            messageDeduplicationId = data['messageDeduplicationId']
         
-        letsdata_assert(not data['messageAttributes'] is None, "invalid messageAttributes - None - QueueMessageReader.parseMessage requires data keys [messageId, messageGroupId, messageDeduplicationId, messageAttributes, messageBody]")
+        letsdata_assert(not data['messageAttributes'] is None, "invalid messageAttributes - None - QueueMessageReader.parseMessage requires data keys [messageId, messageAttributes, messageBody] and optionally [messageGroupId, messageDeduplicationId]")
         letsdata_assert(isinstance(data['messageAttributes'], dict), "invalid messageAttributes - QueueMessageReader.parseMessage requires messageAttributes value to be string")
         
-        letsdata_assert(not data['messageBody'] is None, "invalid messageBody - None - QueueMessageReader.parseMessage requires data keys [messageId, messageGroupId, messageDeduplicationId, messageAttributes, messageBody]")
+        letsdata_assert(not data['messageBody'] is None, "invalid messageBody - None - QueueMessageReader.parseMessage requires data keys [messageId, messageAttributes, messageBody] and optionally [messageGroupId, messageDeduplicationId]")
         letsdata_assert(isinstance(data['messageBody'], str), "invalid messageBody - QueueMessageReader.parseMessage requires messageBody value to be str")
 
-        return QueueMessageReader_ParseMessage(requestId, letsDataAuth, interfaceName, functionName, data['messageId'], data['messageGroupId'], data['messageDeduplicationId'], data['messageAttributes'], data['messageBody'])
+        return QueueMessageReader_ParseMessage(requestId, letsDataAuth, interfaceName, functionName, data['messageId'], messageGroupId, messageDeduplicationId, data['messageAttributes'], data['messageBody'])
     else:
         raise(Exception("Unknown functionName"))
-    
     

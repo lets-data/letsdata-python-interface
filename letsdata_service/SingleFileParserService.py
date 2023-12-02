@@ -51,10 +51,10 @@ class SingleFileParser_ParseDocument(ServiceRequest):
         self.byteArr = contentBytes
         self.startIndex = 0
         if startIndex != self.startIndex:
-            raise(Exception("SingleFileParser_ParseDocument - invalid startIndex for byteArray - expected: "+self.startIndex+", actual: "+startIndex))
+            raise(Exception("SingleFileParser_ParseDocument - invalid startIndex for byteArray - expected: "+str(self.startIndex)+", actual: "+str(startIndex)))
         self.endIndex = len(contentBytes)
         if endIndex != self.endIndex:
-            raise(Exception("SingleFileParser_ParseDocument - invalid endIndex for byteArray - expected: "+self.endIndex+", actual: "+endIndex))
+            raise(Exception("SingleFileParser_ParseDocument - invalid endIndex for byteArray - expected: "+str(self.endIndex)+", actual: "+str(endIndex)))
 
     def execute(self) -> object:
         parser = SingleFileParser()
