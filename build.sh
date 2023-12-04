@@ -3,15 +3,17 @@
 BUILD_STAGE=$1
 
 if [[ $BUILD_STAGE == "test" ]]; then
+    # test stage account, profile is empty as default credentials for test stage
     AWS_ACCOUNT_ID=223413462631
-    echo build $BUILD_STAGE aws account id $AWS_ACCOUNT_ID
     PROFILE=
     REGION="--region us-east-1"
-elif [[ $BUILD_STAGE == "prod" ]]; then
-    AWS_ACCOUNT_ID=956943252347
     echo build $BUILD_STAGE aws account id $AWS_ACCOUNT_ID
+elif [[ $BUILD_STAGE == "prod" ]]; then
+    # prod stage account, profile is devLetsData which has the prod account credentials
+    AWS_ACCOUNT_ID=956943252347
     PROFILE="--profile devLetsData"
     REGION="--region us-east-1"
+    echo build $BUILD_STAGE aws account id $AWS_ACCOUNT_ID
 else
     echo "unknown build stage "
     echo $BUILD_STAGE    
