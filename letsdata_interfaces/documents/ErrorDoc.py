@@ -1,7 +1,7 @@
-from letsdata_interfaces.documents.SingleDoc import SingleDoc
+from letsdata_interfaces.documents.Document import Document
 from letsdata_interfaces.documents.DocumentType import DocumentType
 
-class ErrorDoc(SingleDoc):
+class ErrorDoc(Document):
     def __init__(self, documentId : str, recordType : str, partitionKey : str, documentMetadata : dict , documentKeyValuesMap : dict, errorStartoffsetMap : dict, errorEndoffsetMap: dict, errorMessage : str) -> None:
         super().__init__(DocumentType.ErrorDoc, documentId, recordType, partitionKey, documentMetadata, documentKeyValuesMap)
         self.errorStartoffsetMap = errorStartoffsetMap

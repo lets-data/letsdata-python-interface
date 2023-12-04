@@ -1,7 +1,7 @@
 import gzip, base64, json
 from letsdata_utils.logging_utils import logger
 from letsdata_utils.stage import Stage
-from letsdata_utils.request_utils import return500ResponseFromException, getLambdaStageFromEnvironment, isLambdaFunctionDatasetMicroservice, getJsonObject
+from letsdata_utils.request_utils import return500ResponseFromException, getLambdaStageFromEnvironment, getJsonObject
 from letsdata_service.RequestParser import getServiceRequest
 from letsdata_service.Service import ServiceRequest
 
@@ -35,7 +35,6 @@ def lambda_handler(event, context):
     logger.debug("letsdata_lambda_function start - event: "+str(event))
     try:
         stage : Stage = getLambdaStageFromEnvironment()
-        isDedicated : bool = isLambdaFunctionDatasetMicroservice(context, stage)
         requestId : str = event['requestId']
         logger.debug("letsdata_lambda_function start - requestId: "+requestId)
         if event is None:

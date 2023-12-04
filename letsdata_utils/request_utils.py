@@ -23,11 +23,6 @@ def getLambdaStageFromEnvironment() -> Stage:
     stage = os.getenv('LETS_DATA_STAGE')
     return Stage.fromValue(stage)
 
-
-def isLambdaFunctionDatasetMicroservice(context, stage) -> bool:
-    invokedFunctionArn : str = context.invoked_function_arn
-    return not invokedFunctionArn.endswith(stage.value+"LetsDataPythonBridgeLambdaFunction")
-
 def getJsonObject(input : object):
     # if object is primitive type - return 
     if isinstance(input, str) or isinstance(input, int) or isinstance(input, float) or isinstance(input, bool) or input is None:
