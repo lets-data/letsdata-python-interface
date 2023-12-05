@@ -1,5 +1,6 @@
 
 import uuid
+import json
 from letsdata_interfaces.readers.model.RecordParseHint import RecordParseHint
 from letsdata_interfaces.readers.model.RecordHintType import RecordHintType
 from letsdata_interfaces.readers.model.ParseDocumentResultStatus import ParseDocumentResultStatus
@@ -15,37 +16,7 @@ class QueueMessageReader:
         
     '''
     /**
-     The #Let's Data SQS Queue Reader uses this interface's implementation (also called as user data handlers) to transform the messages from SQS queue message to a #Let's Data document. At a high level, the overall # Let's Data SQS reader design is as follows:
-
-     * #Let's Data reads the messages from the SQS queue and passes the message contents to the user data handlers.
-     * The user data handlers transform this message and returns a document.
-     * #Let's data writes the document to the write / error destinations and then deletes the message from the SQS queue.
-     * For any errors in # Let's Data SQS Reader, or error docs being returned by the user data handler, #Let's Data looks at the reader configuration and determines 1./ whether to fail the task with error 2./ or write an error doc and continue processing
-     * If the decision is to continue processing, the reader deletes the message from the queue and polls for next message.
-
-     +---------------------+                              +---------------------+                        +---------------------+
-     |                     | ------ Read Message -------> |    # Let's Data     |---- parseDocument ---> |  User Data Handler  |
-     |                     |                              |     SQS Reader      |<---- document -------- |                     |
-     |                     |                              |                     |                        +---------------------+
-     |   AWS SQS Queue     |                              |   Is Error Doc?     |
-     |                     |                              |        |            |                        +---------------------+
-     |                     |                              |        +---- no -->-|---- write document --->|  Write Destination  |
-     |                     |                              |        |            |                        +---------------------+
-     +---------------------+                              |        |            |                        +---------------------+
-              ^                                           |        +---- yes ->-|---- write error ------>|  Error Destination  |
-              |                                           |        |            |                        +---------------------+
-              |                                           |   Should Delete?    |
-              |                                           |        |            |
-              +---<------- Delete Message ---------<------|<- yes -+            |
-                                                          |        |            |
-                                                          |        |            |
-                                                          |  no <--+            |
-                                                          |  |                  |
-                                                          |  V                  |
-                                                          |  Throw on Error     |
-                                                          +---------------------+
-
-     The SQS read connector configuration has details about the SQS receive message batch size and on dealing with failures.
+     The Implementation simply echoes the incoming record. You could add custom logic as needed.
 
      * @param messageId The SQS message messageId
      * @param messageGroupId The SQS message messageGroupId
@@ -56,5 +27,17 @@ class QueueMessageReader:
      */
      '''
     def parseMessage(self, messageId : str, messageGroupId : str, messageDeduplicationId : str, messageAttributes : {}, messageBody : str) -> ParseDocumentResult:
-        raise(Exception("Not Yet Implemented"))
+        if not messageBody.strip():
+            logger.debug(f"message body is blank, returning error - messageId: {messageId}, messageGroupId: {messageGroupId}, messageDeduplicationId: {messageDeduplicationId}, messageAttributes: {messageAttributes}, messageBody: {messageBody}")
+            error_doc = ErrorDoc(str(uuid.uuid4()), "SQS_ERROR", messageId, {}, {}, None, None, "empty message body")
+            return ParseDocumentResult(None, error_doc, "ERROR")
+        try:
+            logger.debug(f"processing message - messageId: {messageId}")
+            keyValuesMap = json.loads(messageBody)
+            logger.debug(f"returning success - docId: {keyValuesMap['documentId']}")
+            return ParseDocumentResult(str(uuid.uuid4()), Document(DocumentType.Document, keyValuesMap['documentId'], "DOCUMENT", keyValuesMap['partitionKey'], {}, keyValuesMap), "SUCCESS")
+        except json.JSONDecodeError as ex:
+            logger.debug(f"JSONDecodeError in reading the document - messageId: {messageId}, messageGroupId: {messageGroupId}, messageDeduplicationId: {messageDeduplicationId}, messageAttributes: {messageAttributes}, messageBody: {messageBody}")
+            error_doc = ErrorDoc(str(uuid.uuid4()), None, f"JSONDecodeError - {ex.msg}", messageId, None, None, f"JSONDecodeError - {ex.msg}", messageBody)
+            return ParseDocumentResult(None, error_doc, ParseDocumentResultStatus.ERROR)
     
