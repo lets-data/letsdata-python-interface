@@ -1,5 +1,5 @@
 {
-  "datasetName": "TargetUriExtractorDatasetWriteSQSPython1",
+  "datasetName": "TargetUriExtractorSQSReadKinesisWrite1",
   "accessGrantRoleArn": "arn:aws:iam::151166716410:role/CommonCrawlAccessToIAMUser",
   "customerAccountForAccess": "151166716410",
   "region": "us-east-1",
@@ -7,15 +7,14 @@
     "artifactImplementationLanguage": "python",
     "interfaceECRImageResourceLocation": "Customer",
     "interfaceECRImagePath": "151166716410.dkr.ecr.us-east-1.amazonaws.com/letsdata_python_functions:latest",
-    "connectorDestination": "S3",
-    "readerType": "Single File Reader",
-    "bucketName": "commoncrawl",
-    "bucketResourceLocation": "Customer"
+    "connectorDestination": "SQS",
+    "queueName": "tldwc11ac234d716866c2f9cf763107e2a308",
+    "resourceLocation": "LetsData"
   },
   "writeConnector": {
-    "connectorDestination": "SQS",
+    "connectorDestination": "Kinesis",
     "resourceLocation": "letsdata",
-    "messageIdAttributeName": "docId"
+    "kinesisShardCount": 1
   },
   "errorConnector": {
     "connectorDestination": "S3",
@@ -23,11 +22,11 @@
   },
   "computeEngine": {
     "computeEngineType": "Lambda",
-    "concurrency": 2
+    "concurrency": 2,
+    "timeoutInSeconds": 900
   },
   "manifestFile": {
-    "fileContents": "crawl-data/CC-MAIN-2022-21/segments/1652662509990.19/wet/CC-MAIN-20220516041337-20220516071337-00000.warc.wet.gz",
-    "manifestType": "S3ReaderTextManifestFile",
-    "readerType": "SINGLEFILEREADER"
+    "sqsReaderTaskStopCondition": "DrainQueues",
+    "sqsReaderTaskStopAfterConsecutiveEmptyReceives": 10
   }
 }
