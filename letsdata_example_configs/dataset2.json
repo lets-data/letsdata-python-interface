@@ -1,15 +1,14 @@
 {
-  "datasetName": "CommonCrawlKinesisReadSagemakerComputeAndSQSWritePython1",
+  "datasetName": "DDBStreamReader",
   "accessGrantRoleArn": "arn:aws:iam::151166716410:role/CommonCrawlAccessToIAMUser",
   "customerAccountForAccess": "151166716410",
   "region": "us-east-1",
   "readConnector": {
-    "connectorDestination": "KINESIS",
+    "connectorDestination": "DYNAMODBSTREAMS",
     "artifactImplementationLanguage": "Python",
     "interfaceECRImageResourceLocation": "Customer",
     "interfaceECRImagePath": "151166716410.dkr.ecr.us-east-1.amazonaws.com/letsdata_python_functions:latest",
-    "readerType": "KINESISSTREAMREADER",
-    "streamArn": "arn:aws:kinesis:us-east-1:223413462631:stream/tldwce4a4bf865161b4d49f3b26690c7e6c32",
+    "streamArn": "arn:aws:dynamodb:us-east-1:223413462631:table/tldwcd08b17aa13d968d2fb04a37c6d14f899/stream/2023-12-18T17:00:01.905",
     "resourceLocation": "LetsData"
   },
   "writeConnector": {
@@ -22,37 +21,16 @@
     "resourceLocation": "letsdata"
   },
   "computeEngine": {
-    "computeEngineType": "LAMBDA_AND_SAGEMAKER",
-    "lambda": {
-      "lambdaConcurrency": 2,
-      "lambdaMemoryLimitInMegabytes": 10240,
-      "lambdaTimeoutInSeconds": 900,
-      "logLevel": "WARN"
-    },
-    "model": {
-      "modelResourceLocation": "LetsData",
-      "modelUrl": "s3://resonancecommoncrawl-jar/model.tar.gz",
-      "modelUrlResourceLocation": "Customer",
-      "modelEnvironmentVariables": {
-        "HF_TASK": "question-answering",
-        "SAGEMAKER_PROGRAM": "inference.py",
-        "SAGEMAKER_SUBMIT_DIRECTORY": "model/"
-      },
-      "modelContainerImageName": "HuggingFace_Inference_4_12_3"
-    },
-    "endpoint": {
-      "sagemakerEndpointType": "Serverless",
-      "sagemakerEndpointResourceLocation": "LetsData",
-      "sagemakerServerless": {
-        "sagemakerEndpointConcurrency": 15,
-        "sagemakerMemoryLimitInMegabytes": 6144
-      }
-    }
+    "computeEngineType": "LAMBDA",
+    "concurrency": 2,
+    "memoryLimitInMegabytes": 10240,
+    "timeoutInSeconds": 900,
+    "logLevel": "WARN"  
   },
   "manifestFile": {
-    "kinesisReaderTaskStopCondition": "Continuous",
-    "kinesisReaderTaskStartFromCondition": "Earliest",
-    "kinesisReaderTaskContinuousPollFrequency": "Poll with exponential frequency (max 1 min)",
-    "manifestType": "KinesisStreamReaderManifest"
+    "dynamoDBReaderTaskStopCondition": "Continuous",
+    "dynamoDBReaderTaskStartFromCondition": "Earliest",
+    "dynamoDBReaderTaskContinuousPollFrequency": "Poll with exponential frequency (max 1 min)",
+    "manifestType": "DynamoDBStreamReaderManifest"
   }
 }
