@@ -24,11 +24,13 @@ fi
 echo "########## starting docker build letsdata_python_interface ##############"
 docker build --platform linux/amd64 -t letsdata_python_interface:$BUILD_STAGE -f dockerfile .
 echo "running docker letsdata_python_interface"
-docker run -e LETS_DATA_STAGE='Test' -p 9000:8080 letsdata_python_interface:$BUILD_STAGE &
-sleep 3
+docker run -e LETS_DATA_STAGE='Test' -e AWS_ACCESS_KEY_ID='<AWS_ACCESS_KEY_ID>' -e AWS_SECRET_ACCESS_KEY='<AWS_SECRET_ACCESS_KEY>' -e AWS_DEFAULT_REGION='us-east-1' -e AWS_REGION='us-east-1' -p 9000:8080 letsdata_python_interface:$BUILD_STAGE &
+sleep 5
 CONTAINER_ID=`docker ps|grep letsdata_python_interface:$BUILD_STAGE|cut -d ' ' -f 1`
+IMAGE_ID=`docker ps|grep letsdata_python_interface:$BUILD_STAGE|cut -d ' ' -f 4`
 echo 'containerId: '$CONTAINER_ID
 echo "testing letsdata_python_interface"
+
 SINGLE_FILE_PARSER_RESPONSE=`curl "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"requestId":"65fff00b-460c-4055-a171-f0a8c2e4ae22","interface":"SingleFileParser","function":"getS3FileType","letsdataAuth":{"tenantId":"3c25bdbd-c2b1-4b74-9f6a-b18d23e6ade1","userId":"de9eb5a6-a06f-429f-8f75-9a438fe073e1","datasetName":"CommonCrawlDataset","datasetId":"78ce0aa2-9b8c-4534-9170-445d2cfd70af"},"data":{}}'`
 
 QUEUE_MESSAGE_READER_RESPONSE=`curl "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"requestId":"65fff00b-460c-4055-a171-f0a8c2e4ae22","interface":"QueueMessageReader","function":"parseMessage","letsdataAuth":{"tenantId":"3c25bdbd-c2b1-4b74-9f6a-b18d23e6ade1","userId":"de9eb5a6-a06f-429f-8f75-9a438fe073e1","datasetName":"CommonCrawlDataset","datasetId":"78ce0aa2-9b8c-4534-9170-445d2cfd70af"},"data":{"messageId":"a9d196f6-2b5a-4a49-b095-73e1b950e251","messageGroupId":"dataset_name/data_date/logfile_1.gz","messageDeduplicationId":"dataset_name/data_date/logfile_1.gz","messageAttributes":{"attrib1":"value1","attrib2":"value2"},"messageBody":"WARC/1.0\nWARC-Type: request\nWARC-Date: 2022-01-16T09:37:04Z\nWARC-Record-ID: <urn:uuid:a565d4a1-daf1-4697-abfb-6c155d7ed2e6>\nContent-Length: 316\nContent-Type: application/http; msgtype=request\nWARC-Warcinfo-ID: <urn:uuid:6badabfb-3fa9-47c0-b0ef-ac4a71fd1456>\nWARC-IP-Address: 173.161.93.241\nWARC-Target-URI: http://01.deluxecleaning-services.com/\n\nGET / HTTP/1.1\nUser-Agent: CCBot/2.0 (https://commoncrawl.org/faq/)\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\nAccept-Language: en-US,en;q=0.5\nIf-Modified-Since: Thu, 21 Oct 2021 04:21:20 GMT\nAccept-Encoding: br,gzip\nHost: 01.deluxecleaning-services.com\nConnection: Keep-Alive\n\n\n\nWARC/1.0\nWARC-Type: response\nWARC-Date: 2022-01-16T09:37:04Z\nWARC-Record-ID: <urn:uuid:a2567d44-2052-4fbd-83af-dea76004f6dc>\nContent-Length: 11581\nContent-Type: application/http; msgtype=response\nWARC-Warcinfo-ID: <urn:uuid:6badabfb-3fa9-47c0-b0ef-ac4a71fd1456>\nWARC-Concurrent-To: <urn:uuid:a565d4a1-daf1-4697-abfb-6c155d7ed2e6>\nWARC-IP-Address: 173.161.93.241\nWARC-Target-URI: http://01.deluxecleaning-services.com/\nWARC-Payload-Digest: sha1:LLHZL7RSYU3WB32BJNRJSNGZATJW5JLY\nWARC-Block-Digest: sha1:Y3ZBLVGEXFKYBZIJPP7KJJMGF5N6OC5L\nWARC-Identified-Payload-Type: text/html"}}'`
@@ -40,8 +42,14 @@ DYNAMODBSTREAMS_PARSE_RESPONSE=`curl "http://localhost:9000/2015-03-31/functions
 
 DYNAMODBTABLE_PARSE_RESPONSE=`curl "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"requestId":"65fff00b-460c-4055-a171-f0a8c2e4ae22","interface":"DynamoDBTableItemReader","function":"parseDynamoDBItem","letsdataAuth":{"tenantId":"3c25bdbd-c2b1-4b74-9f6a-b18d23e6ade1","userId":"de9eb5a6-a06f-429f-8f75-9a438fe073e1","datasetName":"CommonCrawlDataset","datasetId":"78ce0aa2-9b8c-4534-9170-445d2cfd70af"},"data":{"tableName":"Test_Table","segmentNumber":1,"data":{"keys":{"key1":"value1","key2":"value2"},"item":{"key1":"value1","key2":"value2","attrib1":"attribVal1"}}}}'`
 
+SPARKMAPPERINTERFACE_MAPPER_RESPONSE=`curl "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"requestId":"65fff00b-460c-4055-a171-f0a8c2e4ae22","interface":"SparkMapperInterface","function":"mapper","letsdataAuth":{"tenantId":"3c25bdbd-c2b1-4b74-9f6a-b18d23e6ade1","userId":"de9eb5a6-a06f-429f-8f75-9a438fe073e1","datasetName":"CommonCrawlDataset","datasetId":"78ce0aa2-9b8c-4534-9170-445d2cfd70af"},"data":{"appName":"letsdata-common-crawl-spark","readDestination":"S3","readUri":"s3a://commoncrawl/crawl-data/CC-MAIN-2023-50/segments/1700679099281.67/wet/CC-MAIN-20231128083443-20231128113443-00003.warc.wet.gz","readFormat":"text","readOptions":{"lineSep":"\n\r\n\r\n"},"writeDestination":"S3","writeUri":"s3a://commoncrawl-dataset-test/spark/outfile.json.gz","writeFormat":"json","writeMode":"overwrite","writeOptions":{"compression":"gzip"},"sparkCredentialsSecretArn":"arn:aws:secretsmanager:us-east-1:223413462631:secret:TestSparkLambdaBridgeCreds11ab9d6f57681204bba6289ea5dceee9-DrftDx"}}'`
+
+SPARKREDUCERINTERFACE_REDUCER_RESPONSE=`curl "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"requestId":"65fff00b-460c-4055-a171-f0a8c2e4ae22","interface":"SparkReducerInterface","function":"reducer","letsdataAuth":{"tenantId":"3c25bdbd-c2b1-4b74-9f6a-b18d23e6ade1","userId":"de9eb5a6-a06f-429f-8f75-9a438fe073e1","datasetName":"CommonCrawlDataset","datasetId":"78ce0aa2-9b8c-4534-9170-445d2cfd70af"},"data":{"appName":"letsdata-common-crawl-spark","readDestination":"S3","readUris": ["s3a://commoncrawl-dataset-test/spark/outfile.json.gz"],"readFormat":"json","readOptions":{"compression":"gzip"},"writeDestination":"S3","writeUri":"s3a://commoncrawl-dataset-test/spark/outfile.parquet.gz","writeFormat":"parquet","writeMode":"overwrite","writeOptions":{"compression":"gzip"},"sparkCredentialsSecretArn":"arn:aws:secretsmanager:us-east-1:223413462631:secret:TestSparkLambdaBridgeCreds11ab9d6f57681204bba6289ea5dceee9-DrftDx"}}'`
+
 echo "killing letsdata_python_interface container"
 docker kill $CONTAINER_ID
+docker rm $CONTAINER_ID
+
 if [[ $SINGLE_FILE_PARSER_RESPONSE == *"Not Yet Implemented"* ]]; then
     echo "letsdata_python_interface single file parser test passed"
 else
@@ -105,6 +113,24 @@ else
     ERROR=TRUE
 fi
 
+if [[ $SPARKMAPPERINTERFACE_MAPPER_RESPONSE == *"Not Yet Implemented"* ]]; then
+    echo "letsdata_python_interface spark mapper interface test passed"
+else
+    echo "letsdata_python_interface spark mapper interface response is not expected"
+    echo "response: "
+    echo $SPARKMAPPERINTERFACE_MAPPER_RESPONSE
+    ERROR=TRUE
+fi
+
+if [[ $SPARKREDUCERINTERFACE_REDUCER_RESPONSE == *"Not Yet Implemented"* ]]; then
+    echo "letsdata_python_interface spark reducer interface test passed"
+else
+    echo "letsdata_python_interface spark reducer interface response is not expected"
+    echo "response: "
+    echo $SPARKREDUCERINTERFACE_REDUCER_RESPONSE
+    ERROR=TRUE
+fi
+
 
 if [[ $ERROR == *"TRUE"* ]]; then
     exit 1
@@ -123,6 +149,7 @@ docker push $REPOSITORY_URI:latest
 #aws lambda update-function-code --function-name TestLetsDataPythonInterfaceLambdaFunction --image-uri 223413462631.dkr.ecr.us-east-1.amazonaws.com/letsdata_python_functions:latest
 #aws lambda invoke --function-name TestLetsDataPythonInterfaceLambdaFunction --invocation-type RequestResponse --payload eyJyZXF1ZXN0SWQiOiI2NWZmZjAwYi00NjBjLTQwNTUtYTE3MS1mMGE4YzJlNGFlMjIiLCJpbnRlcmZhY2UiOiJTaW5nbGVGaWxlUGFyc2VyIiwiZnVuY3Rpb24iOiJnZXRTM0ZpbGVUeXBlIiwibGV0c2RhdGFBdXRoIjp7InRlbmFudElkIjoiM2MyNWJkYmQtYzJiMS00Yjc0LTlmNmEtYjE4ZDIzZTZhZGUxIiwidXNlcklkIjoiZGU5ZWI1YTYtYTA2Zi00MjlmLThmNzUtOWE0MzhmZTA3M2UxIiwiZGF0YXNldE5hbWUiOiJDb21tb25DcmF3bERhdGFzZXQiLCJkYXRhc2V0SWQiOiI3OGNlMGFhMi05YjhjLTQ1MzQtOTE3MC00NDVkMmNmZDcwYWYifSwiZGF0YSI6e319 ./out
 
+docker rmi $IMAGE_ID
 echo "########## letsdata_python_interface built ##############"
 echo "########################"
 echo "########################"
